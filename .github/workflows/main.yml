@@ -1,8 +1,10 @@
-name:first wf
-on:push
+name: first wf
+
+on: push
+
 jobs:
-   first-job:
-   runs-on: ubuntu
-  steps:
-   name: print message
-   run: echo "ghada"
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print message
+        run: echo "ghada"

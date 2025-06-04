@@ -1,0 +1,64 @@
+name: Solar system App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "feature/*"
+
+jobs:
+  unit-testing:
+    name: My Unit testing
+    strategy:
+      matrix:
+        node_version: [18, 22]
+        operating_system: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.operating_system }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: ${{ matrix.node_version }}
+
+      - name: install npm
+        run: npm i
+
+      - name: run unit tests
+        run: npm test
+
+      - name: using Artifacts
+        uses: actions/upload-artifact@v4
+        if: failure() || success()
+        with:
+          name: moch-test-result
+          path: test-results.xml
+
+  code-coverage:
+    name: My Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+
+      - name: install npm
+        run: npm i
+
+      - name: run code coverage
+        run: npm run coverage
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || success()
+        with:
+          name: code-coverage-result
+          path: coverage
+          retention-days: 5
